@@ -1,0 +1,18 @@
+CalendarioCompleto = VAR FYMesInicio=10 
+RETURN ADDCOLUMNS ( calendarauto(9), 
+"Año", YEAR ( [Date] ), 
+"MesNo", FORMAT ( [Date], "MM" ), 
+"AñoMesNo", FORMAT ( [Date], "YYYY/MM" ), 
+"AñoMes", FORMAT ( [Date], "YYYY/mmm" ), 
+"Mes", FORMAT ( [Date], "mmm" ), 
+"MesL", FORMAT ( [Date], "mmmm" ), 
+"DiaSemanaNo", WEEKDAY ( [Date],2), 
+"DiaSemana", FORMAT ( [Date], "dddd" ), 
+"DiaSemanaCorto", FORMAT ( [Date], "ddd" ), 
+"SemanaAño", WEEKNUM([Date],2), 
+"Trimestre", FORMAT ( [Date], "Q" ) & "T", 
+"AñoTrimestre", FORMAT ( [Date], "YYYY" ) & "/T" & FORMAT ( [Date], "Q" ), 
+//Crear columnas a partir dependiendo del año fiscal FY
+"FYAño",CONCATENATE("FY", IF(MONTH([Date]) <FYMesInicio, VALUE(FORMAT([Date],"YY")), VALUE(FORMAT([Date],"YY")) +1 ) ), 
+"FYMesNo", IF (MONTH ( [Date] ) >= FYMesInicio, MONTH ([Date])- (FYMesInicio - 1), MONTH ([Date])+ (12 - FYMesInicio + 1 ) ), 
+"FYTrimestre", CONCATENATE(ROUNDUP(IF (MONTH ( [Date] ) >= FYMesInicio, MONTH ([Date])- (FYMesInicio - 1), MONTH ([Date])+ (12 - FYMesInicio + 1 ))/3,0),"T") )
