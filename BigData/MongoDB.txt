@@ -1,0 +1,2 @@
+Ruta para descargar conector ODBC
+https://www.mongodb.com/docs/bi-connector/master/reference/odbc-driver/
