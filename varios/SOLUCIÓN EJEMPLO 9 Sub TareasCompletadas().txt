@@ -1,0 +1,76 @@
+
+Sub TareasCompletadas()
+    Dim ruta As String
+    Dim LibroTareas As String
+    Dim libroResultado As String
+    Dim nomHoja As String
+    
+    Dim nHojas As Integer
+    Dim h As Integer 'contador de la hoja que estamos trabajando
+    
+    
+    Dim rBuscar As Range
+    Dim rSeleccion As Range
+    Dim rTotal As Range
+    Dim cOK As Range
+    Dim PrimerOK As String
+    
+    Application.ScreenUpdating = False
+    
+'0-leer las celdas de los parámetros
+    ruta = Range("b2").Value
+    LibroTareas = Range("b3").Value
+    libroResultado = Range("b4").Value
+    nomHoja = Range("b5").Value
+    
+'1- abrir el libro de tareas
+    Workbooks.Open Filename:=ruta & "\" & LibroTareas
+
+'2- crear el libro de resultados y guardarlo
+    Workbooks.Add
+    ActiveWorkbook.SaveAs Filename:=ruta & "\" & libroResultado
+    
+'3- Para cada hoja de libro de tareas
+    Application.Windows(LibroTareas).Activate           'activar la ventana del libro con las tareas
+    nHojas = ActiveWorkbook.Worksheets.Count            'obtener el número de hojas que tiene ese libro
+    
+    For h = 1 To nHojas
+        Sheets(h).Activate          'activar la hoja de tareas correspondiente
+         '4- seleccionar las filas marcadas con OK
+        Set rBuscar = Range("a1", Range("A1048576").End(xlUp).Address) ' seleccionar las celdas que pueden tener ok
+        Set cOK = rBuscar.Find("ok", , xlValues)        ' buscamos la celda con el primer ok
+        PrimerOK = cOK.Address                          ' dirección de la celda primer ok
+        
+        Do
+            Set rSeleccion = Range(cOK.Address, cOK.Offset(0, 2).Address)
+            If rTotal Is Nothing Then
+                Set rTotal = rSeleccion
+            Else
+                Set rTotal = Union(rTotal, rSeleccion)
+            End If
+            Set cOK = rBuscar.FindNext(cOK)
+        Loop While cOK.Address <> PrimerOK
+        
+        '5- Copiar y pegar la selección en el libro de resultados
+        rTotal.Select               'seleccionamos todos los ok de la hoja
+        Selection.Copy              'copiamos todos los ok
+        Windows(libroResultado).Activate        'vamos al libro de resultados
+        Sheets.Add
+        ActiveSheet.Name = nomHoja & CStr(h)    'pone el nombre de la hoja convirtiendo el número de hoja a texto
+        Range("a1").Select                      'selecciono la primera celda
+        Selection.PasteSpecial Paste:=xlPasteValues 'pego los valores
+        
+        rTotal.Delete Shift:=xlShiftUp 'elimina las celdas y desplaza hacia arriba el resto
+        Set rTotal = Nothing      'vacio la variable donde guardo los rangos seleccionados
+        Windows(LibroTareas).Activate
+        
+    Next h
+
+'6- cerrar libros de tareas y resultados
+    Windows(LibroTareas).Close SaveChanges:=False  'cierr el libro tareas sin guardar los cambios
+    Windows(libroResultado).Close (True)    'cierra y guarda los cambios
+    
+    Application.ScreenUpdating = True
+    MsgBox "Se han copiado las tareas completadas"
+
+End Sub
