@@ -10,6 +10,7 @@ RETURN ADDCOLUMNS ( calendarauto(9),
 "DiaSemana", FORMAT ( [Date], "dddd" ), 
 "DiaSemanaCorto", FORMAT ( [Date], "ddd" ), 
 "SemanaAño", WEEKNUM([Date],2), 
+"SemanaVW", "KW"&FORMAT(weeknum([Date],21),"0#")& "/" & If(Weeknum([Date],21)>52 &&  MONTH([DATE])=1, Format([date]-7,"yy"),Format([date],"yy")))
 "Trimestre", FORMAT ( [Date], "Q" ) & "T", 
 "AñoTrimestre", FORMAT ( [Date], "YYYY" ) & "/T" & FORMAT ( [Date], "Q" ), 
 //Crear columnas a partir dependiendo del año fiscal FY
